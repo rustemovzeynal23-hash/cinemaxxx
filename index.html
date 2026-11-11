@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CİNEMAXX - TV & Film Portalı</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f1015;
+            --card-bg: #181a20;
+            --accent-color: #7c3aed;
+            --accent-hover: #6d28d9;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: #27272a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding-bottom: 70px;
+            overflow-x: hidden;
+        }
+
+        /* TV Kumandası Focus Desteği */
+        button:focus, input:focus, select:focus, textarea:focus, .media-card:focus, .nav-item:focus {
+            outline: 2px solid var(--accent-color) !important;
+            outline-offset: 2px;
+        }
+
+        header {
+            background: rgba(15, 16, 21, 0.95);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 22px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: 1px;
+        }
+
+        .logo span {
+            color: var(--accent-color);
+        }
+
+        .logo-badge {
+            background: var(--accent-color);
+            color: #fff;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-left: 4px;
+        }
+
+        .search-bar {
+            position: relative;
+            flex: 1;
+            max-width: 450px;
+            margin: 0 20px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            background: #1f222a;
+            border: 1px solid var(--border-color);
+            padding: 10px 16px 10px 40px;
+            border-radius: 20px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+            user-select: text;
+        }
+
+        .search-bar i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .user-badge-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #1f222a;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .admin-tag {
+            background: #ef4444;
+            color: white;
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .container {
+            padding: 20px 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .notice-box {
+            background: linear-gradient(135deg, #1f1b2e 0%, #151321 100%);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 12px;
+            padding: 14px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .notice-box i {
+            font-size: 24px;
+            color: var(--accent-color);
+        }
+
+        .notice-box p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #fff;
+        }
+
+        .section-title i {
+            color: var(--accent-color);
+        }
+
+        /* TV & GENİŞ EKRAN YATAY KART DÜZENİ */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .media-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid var(--border-color);
+        }
+
+        .media-card:hover, .media-card:focus {
+            transform: scale(1.03);
+            box-shadow: 0 8px 24px rgba(124, 58, 237, 0.3);
+        }
+
+        /* 16:9 Yatay TV Oranı */
+        .card-img-wrapper {
+            width: 100%;
+            padding-top: 56.25%;
+            position: relative;
+            background: #232630;
+        }
+
+        .card-img-wrapper img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-score {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(4px);
+            color: #f59e0b;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .card-type {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: var(--accent-color);
+            color: #fff;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .card-views-badge {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .card-content {
+            padding: 12px;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #fff;
+        }
+
+        .card-meta {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.92);
+            z-index: 200;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: var(--bg-color);
+            min-height: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            padding-bottom: 80px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            font-size: 20px;
+        }
+
+        .player-container {
+            width: 100%;
+            background: #000;
+            position: relative;
+        }
+
+        .video-box {
+            width: 100%;
+            max-height: 550px;
+            display: block;
+        }
+
+        .custom-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            background: #181a20;
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .control-btn {
+            background: #27272a;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-btn:hover {
+            background: var(--accent-color);
+        }
+
+        .detail-info {
+            padding: 24px;
+        }
+
+        .detail-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .detail-score-box {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: #181a20;
+            padding: 16px;
+            border-radius: 10px;
+            margin: 16px 0;
+            border: 1px solid var(--border-color);
+        }
+
+        .score-val {
+            font-size: 26px;
+            font-weight: bold;
+            color: #f59e0b;
+        }
+
+        .rating-btns {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .rate-btn {
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        .rate-pos { background: #10b981; }
+        .rate-neg { background: #ef4444; }
+        .rate-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+        .episodes-box {
+            margin: 20px 0;
+        }
+
+        .episode-btn {
+            background: #181a20;
+            border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 12px 16px;
+            width: 100%;
+            text-align: left;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .episode-btn.active {
+            border-color: var(--accent-color);
+            background: #211c38;
+        }
+
+        .comments-box {
+            margin-top: 24px;
+        }
+
+        .comment-input-wrap {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .comment-input-wrap input {
+            flex: 1;
+            background: #181a20;
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 8px;
+            color: #fff;
+            outline: none;
+            user-select: text;
+        }
+
+        .comment-input-wrap button {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 0 20px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .comment-item {
+            background: #181a20;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            border: 1px solid var(--border-color);
+        }
+
+        .comment-user {
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-bottom: 4px;
+        }
+
+        .profile-container {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            background: #0f1015;
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+            user-select: text;
+        }
+
+        .btn-submit {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+        }
+
+        .file-upload-box {
+            border: 2px dashed var(--border-color);
+            padding: 16px;
+            text-align: center;
+            border-radius: 8px;
+            margin-top: 6px;
+            background: #0f1015;
+        }
+
+        .file-upload-box input[type="file"] {
+            display: none;
+        }
+
+        .file-upload-label {
+            display: inline-block;
+            background: #27272a;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(24, 26, 32, 0.98);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            border-top: 1px solid var(--border-color);
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 11px;
+            cursor: pointer;
+            padding: 4px 12px;
+            border-radius: 8px;
+        }
+
+        .nav-item.active {
+            color: var(--accent-color);
+        }
+
+        .nav-item i {
+            font-size: 20px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .empty-msg {
+            text-align: center;
+            padding: 60px 0;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            CİNEMAXX <span class="logo-badge">HD</span>
+        </div>
+        <div class="search-bar">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="searchInput" placeholder="Film veya Dizi ara..." onkeyup="handleSearch()">
+        </div>
+        <div class="user-badge-header" tabindex="0" onclick="switchTab('profile')">
+            <i class="fa-solid fa-user"></i>
+            <span id="headerUsername">Kullanıcı</span>
+            <span id="headerAdminTag" class="admin-tag hidden">YETKİLİ</span>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <div class="notice-box">
+            <i class="fa-solid fa-tv"></i>
+            <p><strong>CİNEMAXX Resmi Film Portalı</strong><br>TV ve tüm cihazlarda en güncel film ve dizileri HD kalitede yatay izleyebilirsiniz.</p>
+        </div>
+
+        <div id="tab-home" class="tab-content">
+            <div class="section-title">
+                <i class="fa-solid fa-fire"></i> Vizyondakiler & Popüler
+            </div>
+            <div id="mediaGrid" class="grid-container"></div>
+        </div>
+
+        <div id="tab-movies" class="tab-content hidden">
+            <div class="section-title">
+                <i class="fa-solid fa-film"></i> Filmler
+            </div>
+            <div id="moviesGrid" class="grid-container"></div>
+        </div>
+
+        <div id="tab-series" class="tab-content hidden">
+            <div class="section-title">
+                <i class="fa-solid fa-tv"></i> Diziler
+            </div>
+            <div id="seriesGrid" class="grid-container"></div>
+        </div>
+
+        <div id="tab-top10" class="tab-content hidden">
+            <div class="section-title">
+                <i class="fa-solid fa-ranking-star"></i> En Çok İzlenen Top 10
+            </div>
+            <div id="top10Grid" class="grid-container"></div>
+        </div>
+
+        <div id="tab-profile" class="tab-content hidden">
+            <div class="profile-container">
+                <div class="section-title">
+                    <i class="fa-solid fa-user-gear"></i> Kullanıcı Profili
+                </div>
+                
+                <!-- A ALANI: Aktif Kullanıcı İsmi -->
+                <div style="background:#0f1015; border:1px solid var(--border-color); padding:12px 16px; border-radius:10px; margin-bottom:16px; display:flex; align-items:center; gap:12px;">
+                    <i class="fa-solid fa-id-badge" style="color:var(--accent-color); font-size:20px;"></i>
+                    <div>
+                        <div style="font-size:11px; color:var(--text-muted);">Aktif Kullanıcı İsmi</div>
+                        <div id="displayActiveProfileName" style="font-size:16px; font-weight:bold; color:#fff;">Kullanıcı</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Kullanıcı Adınız</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="profileNameInput" placeholder="İsminizi yazın">
+                        <button class="btn-submit" style="width: auto;" onclick="saveProfileName()">Kaydet</button>
+                        <!-- B ALANI: Sıfırla Butonu -->
+                        <button class="btn-submit" style="width: auto; background:#ef4444;" onclick="resetProfileForm()">Sıfırla</button>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 20px;">
+                    <label>Yetkili Doğrulama Kodu</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="password" id="authCodeInput" placeholder="Kod yazın">
+                        <button class="btn-submit" style="width: auto; background:#3b82f6;" onclick="verifyAdminCode()">Doğrula</button>
+                    </div>
+                </div>
+
+                <div id="adminPanel" class="hidden" style="margin-top: 28px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+                    <div class="section-title" style="color: #ef4444;">
+                        <i class="fa-solid fa-plus-circle"></i> Yetkili Paneli: Film / Dizi Yükle
+                    </div>
+
+                    <div class="form-group">
+                        <label>İçerik Türü</label>
+                        <select id="addType" onchange="toggleSeriesFields()">
+                            <option value="movie">Film (Tek Bölümlük)</option>
+                            <option value="series">Dizi (Kategori / Bölümlü)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Başlık / İsim</label>
+                        <input type="text" id="addTitle" placeholder="Film veya Dizi Adı">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Yatay Afiş Fotoğrafı Yükle (16:9 Ekran)</label>
+                        <div class="file-upload-box">
+                            <label class="file-upload-label" for="posterFileInput">
+                                <i class="fa-solid fa-image"></i> Galeriden Fotoğraf Seç
+                            </label>
+                            <input type="file" id="posterFileInput" accept="image/*" onchange="ha
